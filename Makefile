@@ -16,8 +16,8 @@ app:
 	rm -rf bazel-app/$(NAME).ipa bazel-app/payload bazel-app/SwiftSupport
 
 simulate:
-	cp bazel-app/$(NAME).app $(SIM_APP)/
-	xcrun simctl boot $(NAME)
+	cp -rf bazel-app/$(NAME).app $(SIM_APP)/
+	xcrun simctl boot $(SIM)
 	xcrun simctl install booted $(SIM_APP)/$(NAME).app
 	open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
