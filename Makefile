@@ -19,6 +19,7 @@ simulate:
 	cp bazel-app/$(NAME).app $(SIM_APP)/
 	xcrun simctl boot $(NAME)
 	xcrun simctl install booted $(SIM_APP)/$(NAME).app
+	open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
 clean:
 	rm -rf bazel-*
