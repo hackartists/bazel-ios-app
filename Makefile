@@ -1,6 +1,7 @@
 NAME=test-app
 CC=bazel
-SIM=22A695A4-B623-40CE-8E05-740891F9F8D8
+SIM=$(shell xcrun simctl list | grep 'iPhone X' | grep -v 'com.apple' | awk '{print $$3}' | tr -d '()')
+SIM_STAT=$(shell xcrun simctl list | grep 'iPhone X' | grep -v 'com.apple' | awk '{print $$4}' | tr -d '()')
 SIM_APP=~/Library/Developer/CoreSimulator/Devices/$(SIM)/data/Containers/Bundle/Application
 
 all: clean ipa app
@@ -16,10 +17,15 @@ app:
 	rm -rf bazel-app/$(NAME).ipa bazel-app/payload bazel-app/SwiftSupport
 
 simulate:
-	cp -rf bazel-app/$(NAME).app $(SIM_APP)/
+ifeq ($(SIM_STAT),Shutdown)
 	xcrun simctl boot $(SIM)
+endif
+	cp -rf bazel-app/$(NAME).app $(SIM_APP)/
 	xcrun simctl install booted $(SIM_APP)/$(NAME).app
 	open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
 clean:
 	rm -rf bazel-*
+ifeq ($(SIM_STAT),Booted)
+	xcrun simctl shutdown $(SIM)
+endif
