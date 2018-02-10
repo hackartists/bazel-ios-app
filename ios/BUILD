@@ -13,9 +13,10 @@ swift_library(
 )
 
 ios_application(
-    name="test-app",
+    name="test",
     app_icons=["//res:PhoneAppIcon.xcassets"],
-    bundle_id="com.example.hello-world-swift",
+    bundle_id="org.artofthings.test",
+    provisioning_profile="org_artofthings_test.mobileprovision",
     families=[
         "iphone",
         "ipad",
