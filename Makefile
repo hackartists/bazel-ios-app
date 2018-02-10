@@ -41,10 +41,10 @@ codesign:
 	$(CS) --force --sign $(shell security cms -D -i "$(PROVISION)" > tmp.cert && /usr/libexec/PlistBuddy -c 'Print DeveloperCertificates:0' tmp.cert | openssl x509 -inform DER -noout -fingerprint | cut -d= -f2 | sed -e s#:##g && rm -rf tmp.cert ) --entitlements bazel-app/$(NAME)_entitlements.entitlements bazel-app/$(NAME)_release.app bazel-app/$(NAME)_release.app/Frameworks/*
 
 deploy:
-	ios-deploy --bundle $(OUTPUT_PATH)/$(RELEASE)/bazel-app/$(NAME).app
+	ios-deploy --bundle $(OUTPUT_PATH)/$(RELEASE)/bazel-app/$(NAME)_$(RELEASE).app
 
 debug:
-	ios-deploy --debug --bundle $(OUTPUT_PATH)/$(RELEASE)/bazel-app/$(NAME).app
+	ios-deploy --debug --bundle $(OUTPUT_PATH)/$(RELEASE)/bazel-app/$(NAME)_$(RELEASE).app
 
 simulate: sim-boot sim-install
 
@@ -61,7 +61,7 @@ ifeq ($(SIM_STAT),Booted)
 endif
 
 sim-install:
-	cp -rf $(OUTPUT_PATH)/$(DEBUG)/bazel-app/$(NAME).app $(SIM_APP)/
+	cp -rf $(OUTPUT_PATH)/$(DEBUG)/bazel-app/$(NAME)_$(DEBUG).app $(SIM_APP)/
 	xcrun simctl install $(SIM) $(SIM_APP)/$(NAME).app
 	open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
