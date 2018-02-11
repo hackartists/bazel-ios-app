@@ -6,18 +6,27 @@ DEBUG=debug
 RELEASE=release
 OUTPUT_BASE=.build
 OUTPUT_PATH=output
-SIM=$(shell xcrun simctl list | grep 'iPhone X' | grep -v 'com.apple' | awk '{print $$3}' | tr -d '()')
-SIM_STAT=$(shell xcrun simctl list | grep 'iPhone X' | grep -v 'com.apple' | awk '{print $$4}' | tr -d '()')
+ifeq ("$(SIMULATOR)","")
+	SIMM=iPhoneX\(
+else
+	SIMM=$(shell echo $(SIMULATOR) | tr -d ' ')\(
+endif
+ifeq ("$(PROVISION)","")
+	PROVISION=default.mobileprovision
+endif
+SIM=$(shell xcrun simctl list devices | tr -d ' ' | grep $(SIMM) | awk -F "[()]" '{for(i=2;i<NF;i+=2) print $$i}' | grep '^[-A-Z,0-9]*$$')
+SIM_STAT=$(shell xcrun simctl list devices | tr -d ' ' | grep $(SIMM) | grep -v 'com.apple' | awk -F "[()]" '{for(i=2;i<NF;i+=2) print $$i}' |  grep -e 'Shutdown' -e 'Booted')
 SIM_APP=~/Library/Developer/CoreSimulator/Devices/$(SIM)/data/Containers/Bundle/Application
-PROVISION=ios/org_artofthings_test.mobileprovision
 
 all: $(BUILDS)
 
 debug.build: debug.ipa $(NAME)_debug.app
+	rm -rf $(OUTPUT_PATH)/$(DEBUG)
 	mkdir -p $(OUTPUT_PATH)/$(DEBUG)
 	mv bazel-* $(OUTPUT_PATH)/$(DEBUG)/
 
 release.build: release.ipa $(NAME)_release.app codesign
+	rm -rf $(OUTPUT_PATH)/$(RELEASE)
 	mkdir -p $(OUTPUT_PATH)/$(RELEASE)
 	mv bazel-* $(OUTPUT_PATH)/$(RELEASE)/
 
@@ -62,7 +71,7 @@ endif
 
 sim-install:
 	cp -rf $(OUTPUT_PATH)/$(DEBUG)/bazel-app/$(NAME)_$(DEBUG).app $(SIM_APP)/
-	xcrun simctl install $(SIM) $(SIM_APP)/$(NAME).app
+	xcrun simctl install $(SIM) $(SIM_APP)/$(NAME)_$(DEBUG).app
 	open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
 
 clean:

@@ -4,5 +4,4 @@ licenses(["notice"])
 
 exports_files([
     "LICENSE",
-    "org_artofthings_test.mobileprovision",
 ])
